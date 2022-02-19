@@ -1,0 +1,55 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+  add_products:
+    image: openjdk:15-jdk
+    container_name: add_products
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 81:80
+    restart: unless-stopped
+  vote_products:
+    image: openjdk:15-jdk
+    container_name: vote_products
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 82:80
+    restart: unless-stopped
+  list_products:
+    image: openjdk:15-jdk
+    container_name: list_products
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 83:80
+    restart: unless-stopped
+  buy_products:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    container_name: buy_products
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 84:80
+    restart: unless-stopped
+  bot:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    container_name: bot
+    environment:
+    - PUID=1000
+    - PGID=1000
+    restart: unless-stopped
