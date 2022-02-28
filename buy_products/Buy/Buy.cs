@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Buy;
 
 public class Buy
@@ -24,6 +26,23 @@ public class Buy
             app.UseSwaggerUI();
         }
         app.UseCors("cors");
+
+        var mongo = new Mongo(new MongoDB.Driver.MongoClient(builder.Configuration.GetValue<string>("Mongo:ConnectionString")),
+            builder.Configuration.GetValue<string>("Mongo:DbName"),
+            builder.Configuration.GetValue<string>("Mongo:CollectionName"));
+
+        app.MapPost("/buy", ([FromBody] int id, [FromBody] int amount) =>
+        {
+            if (mongo.GetProduct(id) == null)
+            {
+                return Results.NotFound();
+            }
+            if (mongo.ReduceStockProduct(id, amount))
+            {
+                return Results.Conflict();
+            }
+            return Results.Ok();
+        });
 
         //var summaries = new[]
         //{
