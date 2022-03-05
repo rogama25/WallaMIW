@@ -18,4 +18,6 @@ RUN dotnet publish "Buy.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Buy.dll"]
+COPY wait-for .
+RUN apt-get -q update && apt-get -qy install netcat wget
+ENTRYPOINT ["./wait-for", "mongo:27017", "--", "dotnet", "Buy.dll"]

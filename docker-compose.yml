@@ -5,51 +5,56 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - MONGO_INITDB_ROOT_USERNAME=wallamiw
+      - MONGO_INITDB_ROOT_PASSWORD=wallamiw
     volumes:
       - ./data/mongo:/data/db
     ports:
       - 27017:27017
-    restart: unless-stopped
-  add_products:
-    image: openjdk:15-jdk
-    container_name: add_products
-    environment:
-    - PUID=1000
-    - PGID=1000
-    ports:
-      - 81:80
-    restart: unless-stopped
-  vote_products:
-    image: openjdk:15-jdk
-    container_name: vote_products
-    environment:
-    - PUID=1000
-    - PGID=1000
-    ports:
-      - 82:80
-    restart: unless-stopped
-  list_products:
-    image: openjdk:15-jdk
-    container_name: list_products
-    environment:
-    - PUID=1000
-    - PGID=1000
-    ports:
-      - 83:80
-    restart: unless-stopped
+
+  # add_products:
+  #   build: ./add_products
+  #   container_name: add_products
+  #   environment:
+  #   - PUID=1000
+  #   - PGID=1000
+  #   ports:
+  #     - 81:80
+  # vote_products:
+  #   image: ./vote_products
+  #   container_name: vote_products
+  #   environment:
+  #   - PUID=1000
+  #   - PGID=1000
+  #   ports:
+  #     - 82:80
+  # list_products:
+  #   image: ./list_products
+  #   container_name: list_products
+  #   environment:
+  #   - PUID=1000
+  #   - PGID=1000
+  #   ports:
+  #     - 83:80
   buy_products:
-    image: mcr.microsoft.com/dotnet/sdk:6.0
+    build: ./buy_products/Buy
     container_name: buy_products
     environment:
     - PUID=1000
     - PGID=1000
     ports:
       - 84:80
-    restart: unless-stopped
-  bot:
-    image: mcr.microsoft.com/dotnet/sdk:6.0
-    container_name: bot
-    environment:
-    - PUID=1000
-    - PGID=1000
-    restart: unless-stopped
+  # bot:
+  #   build: ./bot/TelegramBot
+  #   container_name: bot
+  #   environment:
+  #   - PUID=1000
+  #   - PGID=1000
+  # web_client:
+  #   build: ./web_client/
+  #   container_name: web_client
+  #   environment:
+  #   - PUID=1000
+  #   - PGID=1000
+  #   ports:
+  #     - 8080:80
