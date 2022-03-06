@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LiteDB;
 
 namespace TelegramBot
 {
     internal class Status
     {
-        string? Addtional { get; set; }
-        StatusType Type { get; set; }
+        [BsonId]
+        public long UserId { get; set; }
+        public string? Addtional { get; set; }
+        public StatusType Type { get; set; }
     }
 
     internal enum StatusType
