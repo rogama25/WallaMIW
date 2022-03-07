@@ -36,7 +36,7 @@ public class Buy
             {
                 return Results.Conflict();
             }
-            return Results.Ok();
+            return Results.NoContent();
         }).Produces(StatusCodes.Status204NoContent).Produces(StatusCodes.Status404NotFound).Produces(StatusCodes.Status409Conflict);
 
         app.Run();
