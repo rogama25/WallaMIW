@@ -10,12 +10,12 @@ namespace Buy
         {
             _products = mongo.GetDatabase(database).GetCollection<Product>(collection);
         }
-        public Product GetProduct(int id)
+        public Product GetProduct(string id)
         {
             return _products.Find(product => product.Id == id).FirstOrDefault();
         }
 
-        public bool ReduceStockProduct(int id, int amountReduced)
+        public bool ReduceStockProduct(string id, int amountReduced)
         {
             return _products.UpdateOne(product => product.Id == id && product.Stock >= amountReduced,
                 Builders<Product>.Update.Inc(product => product.Stock, -amountReduced)).MatchedCount > 0;

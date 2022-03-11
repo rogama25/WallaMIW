@@ -5,13 +5,16 @@ namespace Buy
 {
     public class Product
     {
+        [BsonElement("_id")]
         [BsonId]
-        public int Id;
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id = string.Empty;
 
         [BsonElement("title")]
         public string Title = string.Empty;
 
         [BsonElement("price")]
+        [BsonRepresentation(BsonType.Double, AllowTruncation =true)]
         public float Price;
 
         [BsonElement("description")]

@@ -26,7 +26,7 @@ public class Buy
             builder.Configuration.GetValue<string>("Mongo:DbName"),
             builder.Configuration.GetValue<string>("Mongo:CollectionName"));
 
-        app.MapPost("/products/{id}/buy", ([FromBody] BuyJson body, int id) =>
+        app.MapPost("/products/{id}/buy", ([FromBody] BuyJson body, string id) =>
         {
             if (mongo.GetProduct(id) == null)
             {

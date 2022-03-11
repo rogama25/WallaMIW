@@ -1,0 +1,24 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "http://localhost:8080/listProducts-1.0-SNAPSHOT/list_products?wsdl"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, ListProductsWS"
+    ],
+    "references": [
+      "LiteDB, {LiteDB, 5.0.11}",
+      "Newtonsoft.Json, {Newtonsoft.Json, 12.0.2}",
+      "RestSharp, {RestSharp, 107.3.0}",
+      "System.Threading.Channels, {System.Threading.Channels, 6.0.0}",
+      "Telegram.Bot, {Telegram.Bot, 17.0.0}",
+      "Telegram.Bot.Extensions.Polling, {Telegram.Bot.Extensions.Polling, 1.0.2}"
+    ],
+    "targetFramework": "net6.0",
+    "typeReuseMode": "All"
+  }
+}
