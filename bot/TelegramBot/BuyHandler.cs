@@ -4,7 +4,7 @@ namespace TelegramBot
 {
     public class BuyHandler
     {
-        public static string BuyProduct(int id, int amount)
+        public static string BuyProduct(string id, int amount)
         {
             var client = new RestClient("buy_products");
             var request = new RestRequest("/products/" + id + "/buy", Method.Post)

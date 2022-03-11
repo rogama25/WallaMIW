@@ -1,4 +1,5 @@
-﻿using LiteDB;
+﻿using ListProductsWS;
+using LiteDB;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
@@ -6,6 +7,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
+using VoteProductsWS;
 
 namespace TelegramBot
 {
@@ -65,9 +67,9 @@ namespace TelegramBot
                                         var isNumeric = int.TryParse(update.Message.Text, out int amount);
                                         if (isNumeric)
                                         {
-                                            var response = BuyHandler.BuyProduct(int.Parse(status.Addtional!), amount);
+                                            var response = BuyHandler.BuyProduct(status.Addtional!, amount);
                                             await bot.SendTextMessageAsync(update.Message.Chat.Id, response, cancellationToken: cancellationToken);
-                                            await GetInfoAndSend(bot, update.Message.Chat.Id, int.Parse(status.Addtional!), cancellationToken);
+                                            await GetInfoAndSend(bot, update.Message.Chat.Id, status.Addtional!, cancellationToken);
                                             collection.Upsert(new Status { UserId = update.Message.From!.Id, Type = StatusType.MENU });
                                         }
                                         else
@@ -82,9 +84,9 @@ namespace TelegramBot
                                 }
                                 break;
                             case MessageType.Photo:
-                                if (update.Message.ViaBot != null && int.TryParse(update.Message.Caption, out int id) && update.Message.ViaBot.Equals(await bot.GetMeAsync(cancellationToken: cancellationToken)))
+                                if (update.Message.ViaBot != null && update.Message.ViaBot.Equals(await bot.GetMeAsync(cancellationToken: cancellationToken)))
                                 {
-                                    await GetInfoAndSend(bot, update.Message.Chat.Id, id, cancellationToken);
+                                    await GetInfoAndSend(bot, update.Message.Chat.Id, update.Message.Caption!, cancellationToken);
                                 }
                                 break;
                         }
@@ -100,28 +102,32 @@ namespace TelegramBot
                     {
                         if (update.CallbackQuery.Data!.StartsWith("b."))
                         {
-                            var r = int.TryParse(update.CallbackQuery.Data.Replace("b.", ""), out var id);
-                            if (r)
-                            {
-                                await bot.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, "¿Cuántas unidades quieres?", cancellationToken: cancellationToken);
-                                collection.Upsert(new Status { UserId = update.CallbackQuery.Message.From!.Id, Type = StatusType.PURCHASING, Addtional = id.ToString() });
-                            }
+                            var id = update.CallbackQuery.Data.Replace("b.", "");
+                            await bot.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, "¿Cuántas unidades quieres?", cancellationToken: cancellationToken);
+                            collection.Upsert(new Status { UserId = update.CallbackQuery.Message.From!.Id, Type = StatusType.PURCHASING, Addtional = id.ToString() });
                         }
                         else if (update.CallbackQuery.Data.StartsWith("f."))
                         {
-                            var r = int.TryParse(update.CallbackQuery.Data.Replace("b.", ""), out var id);
-                            if (r)
-                            {
-                                await GetInfoAndSend(bot, update.CallbackQuery.Message!.Chat.Id, id, cancellationToken);
-                            }
+                            var id = update.CallbackQuery.Data.Replace("f.", "");
+                            await new VoteProductsWSClient().addFavoriteAsync(id);
+                            await GetInfoAndSend(bot, update.CallbackQuery.Message!.Chat.Id, id, cancellationToken);
                         }
                     }
                     break;
                 case UpdateType.InlineQuery:
-                    // Obtener lista, filtrar y answerInlineQuery
-                    InlineQueryResultPhoto[] results = Array.Empty<InlineQueryResultPhoto>();
-                    //foreach (var p in products)
-                    //if ("a".ToLower().Contains(update.InlineQuery!.Query.ToLower()))
+                    var list = new ListProductsWSClient().listProductsAsync().Result.@return;
+                    List<InlineQueryResultPhoto> results = new();
+                    foreach (var p in list)
+                    {
+                        if (p.title.ToLower().Contains(update.InlineQuery!.Query.ToLower()) || p.description.ToLower().Contains(update.InlineQuery!.Query.ToLower()))
+                        {
+                            var photo = new InlineQueryResultPhoto("", p.image, p.image)
+                            {
+                                Caption = p.id
+                            };
+                            results.Add(photo);
+                        }
+                    }
                     await bot.AnswerInlineQueryAsync(update.InlineQuery!.Id, results, 30, true, cancellationToken: cancellationToken);
                     break;
             }
@@ -140,11 +146,12 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        static async Task GetInfoAndSend(ITelegramBotClient bot, long chatId, int productId, CancellationToken cts)
+        static async Task GetInfoAndSend(ITelegramBotClient bot, long chatId, string productId, CancellationToken cts)
         {
-            // Obtener lista y filtrar
-            await bot.SendPhotoAsync(chatId, "URL", cancellationToken: cts);
-            string message = $"*{"Camiseta"}*\n{"Camiseta reshulona"}\n_{23.99 + "€"}\n{"Men"}\n{3} unidades\n{18}favoritos";
+            var list = new ListProductsWSClient().listProductsAsync().Result.@return;
+            var product = list.Where(v => v.id == productId).FirstOrDefault();
+            await bot.SendPhotoAsync(chatId, product!.image, cancellationToken: cts);
+            string message = $"*{product.title}*\n{product.description}\n_{product.price + "€"}\n{product.category}\n{product.stock} unidades\n{product.favorites} favoritos";
             await bot.SendTextMessageAsync(chatId, message, ParseMode.MarkdownV2, cancellationToken: cts, replyMarkup: new InlineKeyboardMarkup(new[]
             {
                 new[]
