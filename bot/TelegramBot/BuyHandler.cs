@@ -6,7 +6,7 @@ namespace TelegramBot
     {
         public static string BuyProduct(string id, int amount)
         {
-            var client = new RestClient("buy_products");
+            var client = new RestClient("http://buyproducts");
             var request = new RestRequest("/products/" + id + "/buy", Method.Post)
             {
                 RequestFormat = DataFormat.Json

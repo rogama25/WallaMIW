@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "VoteProductsWSService", targetNamespace = "http://webservices.voteproducts.ws.miw.uniovi.es/", wsdlLocation = "http://localhost:8080/voteproducts-1.0-SNAPSHOT/vote_products?wsdl")
+@WebServiceClient(name = "VoteProductsWSService", targetNamespace = "http://webservices.voteproducts.ws.miw.uniovi.es/", wsdlLocation = "http://voteproducts:8080/voteproducts-1.0-SNAPSHOT/vote_products?wsdl")
 public class VoteProductsWSService
     extends Service
 {
@@ -30,7 +30,7 @@ public class VoteProductsWSService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://localhost:8080/voteproducts-1.0-SNAPSHOT/vote_products?wsdl");
+            url = new URL("http://voteproducts:8080/voteproducts-1.0-SNAPSHOT/vote_products?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

@@ -308,7 +308,7 @@ namespace VoteProductsWS
         {
             if ((endpointConfiguration == EndpointConfiguration.VoteProductsWSPort))
             {
-                return new System.ServiceModel.EndpointAddress("http://localhost:8080/voteproducts-1.0-SNAPSHOT/vote_products");
+                return new System.ServiceModel.EndpointAddress("http://voteproducts:8080/voteproducts-1.0-SNAPSHOT/vote_products");
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }

@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 
 public class BuyHandler {
     public int buy(String id, String amount) throws Exception {
-        String uri = "http://localhost:80/products/" + id + "/buy";
+        String uri = "http://buyproducts:80/products/" + id + "/buy";
         String data = "{\"amount\":" + amount + "}";
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder()

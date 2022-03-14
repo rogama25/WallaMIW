@@ -298,7 +298,7 @@ namespace ListProductsWS
         {
             if ((endpointConfiguration == EndpointConfiguration.ListProductsWSPort))
             {
-                return new System.ServiceModel.EndpointAddress("http://localhost:8080/listProducts-1.0-SNAPSHOT/list_products");
+                return new System.ServiceModel.EndpointAddress("http://listproducts:8080/listProducts-1.0-SNAPSHOT/list_products");
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }

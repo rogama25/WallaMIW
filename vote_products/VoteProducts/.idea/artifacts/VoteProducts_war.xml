@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="VoteProducts:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>VoteProducts</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="voteproducts-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="VoteProducts:war exploded" />
+    </root>
+  </artifact>
+</component>

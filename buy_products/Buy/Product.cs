@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Buy
 {
+    [BsonIgnoreExtraElements]
     public class Product
     {
         [BsonElement("_id")]

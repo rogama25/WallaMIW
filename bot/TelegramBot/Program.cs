@@ -13,6 +13,7 @@ namespace TelegramBot
 {
     class MainClass
     {
+        static AutoResetEvent? waitHandle;
         static async Task Main()
         {
             string? API_KEY = Environment.GetEnvironmentVariable("TELEGRAM_API_KEY");
@@ -23,16 +24,20 @@ namespace TelegramBot
             var bot = new TelegramBotClient(API_KEY);
             using var cts = new CancellationTokenSource();
 
+            waitHandle = new AutoResetEvent(false);
+
             var receiverOptions = new ReceiverOptions
             {
                 AllowedUpdates = { }
             };
             var me = await bot.GetMeAsync();
             Console.WriteLine("Encendido bot de Telegram. https://t.me/" + me.Username);
-            Directory.CreateDirectory("/data/db");
+            while (true)
+            {
+                bot.StartReceiving(MainClass.HandleUpdate, MainClass.HandleErrorAsync, receiverOptions, cancellationToken: cts.Token);
+                waitHandle.WaitOne();
+            }
 
-            bot.StartReceiving(MainClass.HandleUpdate, MainClass.HandleErrorAsync, receiverOptions, cancellationToken: cts.Token);
-            await Task.Delay(Timeout.Infinite, cts.Token);
         }
 
         static async Task HandleUpdate(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
@@ -69,7 +74,10 @@ namespace TelegramBot
                                         {
                                             var response = BuyHandler.BuyProduct(status.Addtional!, amount);
                                             await bot.SendTextMessageAsync(update.Message.Chat.Id, response, cancellationToken: cancellationToken);
-                                            await GetInfoAndSend(bot, update.Message.Chat.Id, status.Addtional!, cancellationToken);
+                                            if (response != "No hemos podido localizar el producto que intentabas comprar")
+                                            {
+                                                await GetInfoAndSend(bot, update.Message.Chat.Id, status.Addtional!, cancellationToken);
+                                            }
                                             collection.Upsert(new Status { UserId = update.Message.From!.Id, Type = StatusType.MENU });
                                         }
                                         else
@@ -84,27 +92,24 @@ namespace TelegramBot
                                 }
                                 break;
                             case MessageType.Photo:
-                                if (update.Message.ViaBot != null && update.Message.ViaBot.Equals(await bot.GetMeAsync(cancellationToken: cancellationToken)))
-                                {
-                                    await GetInfoAndSend(bot, update.Message.Chat.Id, update.Message.Caption!, cancellationToken);
-                                }
+                                await GetInfoAndSend(bot, update.Message.Chat.Id, update.Message.Caption!, cancellationToken);
                                 break;
                         }
                     }
                     break;
                 case UpdateType.CallbackQuery:
-                    await bot.EditMessageReplyMarkupAsync(update.CallbackQuery!.InlineMessageId!, InlineKeyboardMarkup.Empty(), cancellationToken: cancellationToken);
                     if (update.CallbackQuery.Message == null)
                     {
                         await bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, "Ha habido un error. Prueba a empezar de nuevo usando /start", cancellationToken: cancellationToken);
                     }
                     else
                     {
+                        await bot.EditMessageReplyMarkupAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId, InlineKeyboardMarkup.Empty(), cancellationToken: cancellationToken);
                         if (update.CallbackQuery.Data!.StartsWith("b."))
                         {
                             var id = update.CallbackQuery.Data.Replace("b.", "");
                             await bot.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, "¿Cuántas unidades quieres?", cancellationToken: cancellationToken);
-                            collection.Upsert(new Status { UserId = update.CallbackQuery.Message.From!.Id, Type = StatusType.PURCHASING, Addtional = id.ToString() });
+                            collection.Upsert(new Status { UserId = update.CallbackQuery.From!.Id, Type = StatusType.PURCHASING, Addtional = id });
                         }
                         else if (update.CallbackQuery.Data.StartsWith("f."))
                         {
@@ -121,7 +126,7 @@ namespace TelegramBot
                     {
                         if (p.title.ToLower().Contains(update.InlineQuery!.Query.ToLower()) || p.description.ToLower().Contains(update.InlineQuery!.Query.ToLower()))
                         {
-                            var photo = new InlineQueryResultPhoto("", p.image, p.image)
+                            var photo = new InlineQueryResultPhoto(p.id, p.image, p.image)
                             {
                                 Caption = p.id
                             };
@@ -143,6 +148,7 @@ namespace TelegramBot
             };
 
             Console.WriteLine(ErrorMessage);
+            waitHandle.Set();
             return Task.CompletedTask;
         }
 
@@ -151,16 +157,16 @@ namespace TelegramBot
             var list = new ListProductsWSClient().listProductsAsync().Result.@return;
             var product = list.Where(v => v.id == productId).FirstOrDefault();
             await bot.SendPhotoAsync(chatId, product!.image, cancellationToken: cts);
-            string message = $"*{product.title}*\n{product.description}\n_{product.price + "€"}\n{product.category}\n{product.stock} unidades\n{product.favorites} favoritos";
-            await bot.SendTextMessageAsync(chatId, message, ParseMode.MarkdownV2, cancellationToken: cts, replyMarkup: new InlineKeyboardMarkup(new[]
+            string message = $"*{product.title}*\n{product.description}\n_{product.price + "€"}_\n{product.category}\n{product.stock} unidades\n{product.favorites} favoritos";
+            await bot.SendTextMessageAsync(chatId, message, ParseMode.Markdown, cancellationToken: cts, replyMarkup: new InlineKeyboardMarkup(new[]
             {
                 new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("Comprar este producto", $"b.{1}")
+                    InlineKeyboardButton.WithCallbackData("Comprar este producto", $"b.{product.id}")
                 },
                 new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("Marcar como favorito", $"f.{1}")
+                    InlineKeyboardButton.WithCallbackData("Marcar como favorito", $"f.{product.id}")
                 },
                 new[]
                 {

@@ -12,49 +12,57 @@ services:
     ports:
       - 27017:27017
 
-  # add_products:
-  #   build: ./add_products
-  #   container_name: add_products
-  #   environment:
-  #   - PUID=1000
-  #   - PGID=1000
-  #   ports:
-  #     - 81:80
-  # vote_products:
-  #   image: ./vote_products
-  #   container_name: vote_products
-  #   environment:
-  #   - PUID=1000
-  #   - PGID=1000
-  #   ports:
-  #     - 82:80
-  # list_products:
-  #   image: ./list_products
-  #   container_name: list_products
-  #   environment:
-  #   - PUID=1000
-  #   - PGID=1000
-  #   ports:
-  #     - 83:80
-  buy_products:
+  addproducts:
+    build: ./add_products/addService
+    container_name: addproducts
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 81:8080
+    restart: "on-failure"
+  voteproducts:
+    build: ./vote_products/VoteProducts
+    container_name: voteproducts
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 82:8080
+    restart: "on-failure"
+  listproducts:
+    build: ./list_products/ListProducts
+    container_name: listproducts
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 83:8080
+    restart: "on-failure"
+  buyproducts:
     build: ./buy_products/Buy
-    container_name: buy_products
+    container_name: buyproducts
     environment:
     - PUID=1000
     - PGID=1000
     ports:
       - 84:80
-  # bot:
-  #   build: ./bot/TelegramBot
-  #   container_name: bot
-  #   environment:
-  #   - PUID=1000
-  #   - PGID=1000
-  # web_client:
-  #   build: ./web_client/
-  #   container_name: web_client
-  #   environment:
-  #   - PUID=1000
-  #   - PGID=1000
-  #   ports:
-  #     - 8080:80
+    restart: "on-failure"
+  bot:
+    build: ./bot/TelegramBot
+    container_name: bot
+    environment:
+    - PUID=1000
+    - PGID=1000
+    volumes:
+      - ./data/telegram:/data/db/
+    restart: "on-failure"
+  front:
+    build: ./front/WallaMIW
+    container_name: front
+    environment:
+    - PUID=1000
+    - PGID=1000
+    ports:
+      - 80:8080
+    restart: "on-failure"

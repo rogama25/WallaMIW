@@ -20,4 +20,5 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 COPY wait-for .
 RUN apt-get -q update && apt-get -qy install netcat wget
+RUN chmod +x ./wait-for
 ENTRYPOINT ["./wait-for", "mongo:27017", "--", "dotnet", "Buy.dll"]

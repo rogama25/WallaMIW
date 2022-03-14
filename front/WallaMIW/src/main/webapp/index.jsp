@@ -2,7 +2,7 @@
 <%@page import="es.uniovi.miw.ws.wallamiw.client.VoteProductsWSClient"%>
 <%@ page import="es.uniovi.miw.ws.wallamiw.webservices.Product" %>
 <%@ page import="java.util.List" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <% if (request.getParameter("id")!=null){
@@ -19,7 +19,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <a href="http://localhost:8083/wallaMIW/" class="navbar-brand">
+    <a href="/WallaMIW/" class="navbar-brand">
       <img src="https://cdn.freebiesupply.com/logos/large/2x/w-logo-png-transparent.png" height="28" alt="WallaMIW">
     </a>
     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -27,8 +27,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <div class="navbar-nav">
-        <a href="http://localhost:8083/wallaMIW/" class="nav-item nav-link active">Inicio</a>
-        <a href="http://localhost:8080/WallaMIW/add_product.jsp" class="nav-item nav-link">Añadir producto</a>
+        <a href="/WallaMIW/" class="nav-item nav-link active">Inicio</a>
+        <a href="/WallaMIW/add_product.jsp" class="nav-item nav-link">AÃ±adir producto</a>
       </div>
     </div>
   </div>
@@ -40,12 +40,12 @@
       <table class="table table-image">
         <thead>
         <tr>
-          <th scope="col">Título</th>
+          <th scope="col">TÃ­tulo</th>
           <th scope="col">Imagen</th>
           <th scope="col">Stock</th>
           <th scope="col">Precio</th>
-          <th scope="col">Categoría</th>
-          <th scope="col">Descripción</th>
+          <th scope="col">CategorÃ­a</th>
+          <th scope="col">DescripciÃ³n</th>
           <th scope="col">Favoritos</th>
           <th scope="col">Comprar</th>
         </tr>
@@ -58,24 +58,24 @@
         %>
         <div class="row">
           <tr>
-            <th scope="row"><%= listado.get(i).getTitle()%></th>
+            <th scope="row" style="width: 10%;"><%= listado.get(i).getTitle()%></th>
             <td class="w-25">
               <img src="<%= listado.get(i).getImage()%>" class="img-fluid img-thumbnail" alt="Sheep">
             </td>
             <td><%= listado.get(i).getStock()%></td>
-            <td><%= listado.get(i).getPrice()%></td>
+            <td><%= listado.get(i).getPrice()%> â‚¬</td>
             <td><%= listado.get(i).getCategory()%></td>
-            <td><%= listado.get(i).getDescription()%></td>
+            <td style="width: 10%;"><%= listado.get(i).getDescription()%></td>
             <td>
               <div>
                 <%= listado.get(i).getFavorites()%>
-                <a href="http://localhost:8080/wallaMIW?id=<%=listado.get(i).getId()%>" class="btn btn-default btnLike">
-                  <img class="imgLike" src="https://www.kindpng.com/picc/m/697-6979063_instagram-like-icon-png-clipart-png-download-love.png" />
+                <a style="width: 75%;" href="/WallaMIW?id=<%=listado.get(i).getId()%>" class="btn btn-default">
+                  <img src="https://www.kindpng.com/picc/m/697-6979063_instagram-like-icon-png-clipart-png-download-love.png" />
                 </a>
               </div>
 
             </td>
-            <td><a class="btn btn-primary" href="http://localhost:8080/WallaMIW/buy_products.jsp?id=<%=listado.get(i).getId()%>" role="button">Comprar</a></td>
+            <td><a class="btn btn-primary" href="/WallaMIW/buy_products.jsp?id=<%=listado.get(i).getId()%>" role="button">Comprar</a></td>
           </tr>
         </div>
         <%

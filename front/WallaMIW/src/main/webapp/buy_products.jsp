@@ -13,6 +13,22 @@
             crossorigin="anonymous"></script>
 </head>
 <body class="container" style="height: 100%">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a href="/WallaMIW/" class="navbar-brand">
+            <img src="https://cdn.freebiesupply.com/logos/large/2x/w-logo-png-transparent.png" height="28" alt="WallaMIW">
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav">
+                <a href="/WallaMIW/" class="nav-item nav-link active">Inicio</a>
+                <a href="/WallaMIW/add_product.jsp" class="nav-item nav-link">Añadir producto</a>
+            </div>
+        </div>
+    </div>
+</nav>
 <div class="row justify-content-center align-items-center h-100">
     <div>
         <h1 class="text-center">Comprar producto</h1>
@@ -32,7 +48,7 @@
                                 <h3>No hay existencias</h3>
                             </c:when>
                         </c:choose>
-                        <a href="index.jsp" class="btn btn-primary">Volver a la lista de productos</a>
+                        <a href="/WallaMIW/index.jsp" class="btn btn-primary">Volver a la lista de productos</a>
                     </div>
                 </c:when>
                 <c:otherwise>
