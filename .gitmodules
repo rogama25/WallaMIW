@@ -1,0 +1,3 @@
+[submodule "img_host"]
+	path = img_host
+	url = git@github.com:rogama25/simple-image-hosting.git
